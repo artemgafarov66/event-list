@@ -1,0 +1,22 @@
+.EventItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 45px;
+  font-size: 14px;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  .event-td {
+    padding: 0 10px;
+    width: 185px;
+  }
+  &.first {
+    height: 53px;
+    .event-td {
+      color: #afafaf;
+    }
+  }
+  .Checkbox {
+    margin-left: 25px;
+  }
+}
