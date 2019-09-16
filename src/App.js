@@ -1,117 +1,14 @@
 import React, { Component } from 'react';
-import './App.scss';
+import { connect } from 'react-redux';
 import Input from './components/Input/Input';
 import EventItem from './components/EventItem/EventItem';
 import DeleteForm from './components/DeleteForm/DeleteForm';
 import AddForm from './components/AddForm/AddForm';
+import { filterEvents } from './utils';
+import { CITIES } from './consts';
 
+import './App.scss';
 class App extends Component {
-  state = {
-    events: [
-      {
-        name: 'Название',
-        date: 'Дата',
-        city: 'Место проведения',
-        isChoose: false,
-      },
-      {
-        name: 'мероприятие 1',
-        date: '11.11.11',
-        city: 'НН',
-        isChoose: false,
-      },
-      {
-        name: 'мероприятие 2',
-        date: '22.222.22',
-        city: 'НН',
-        isChoose: false,
-      },
-      {
-        name: 'мероприятие 11',
-        date: '11.11.11',
-        city: 'НН',
-        isChoose: false,
-      },
-      {
-        name: 'мероприятие 22',
-        date: '22.222.22',
-        city: 'НН',
-        isChoose: false,
-      }
-    ],
-    searchValue: '',
-    isShowDeleteForm: false,
-    isShowAddForm: false,
-    newEventName: '',
-    newEventDate: '',
-    newEventCity: '',
-    cities: ['Арзамас', 'Бор', 'Дзержинск', 'Нижний Новгород', 'Саров'],
-  }
-
-  copyEvent = () => [...this.state.events].map(eventItem => ({ ...eventItem }));
-  filterEvents = (events) => events.filter((eventItem, i) => eventItem.name.includes(this.state.searchValue) || !i)
-
-  onChoose(choose, index) {
-    const events = this.copyEvent();
-
-    if (!index) this.filterEvents(events).forEach(eventItem => eventItem.isChoose = choose);
-    else {
-      this.filterEvents(events)[0].isChoose = false;
-      this.filterEvents(events)[index].isChoose = choose;
-    }
-
-    this.setState({ events });
-  }
-
-  onChangeInputSearch(searchValue) {
-    this.setState({ searchValue });
-  }
-
-  onDelete() {
-    const events = this.copyEvent().filter((eventItem, i) => !eventItem.isChoose || !i);
-    events[0].isChoose = false;
-    this.setState({ events, isShowDeleteForm: false });
-  }
-
-  onShowDeleteForm() {
-    this.setState({ isShowDeleteForm: !this.state.isShowDeleteForm });
-  }
-
-  onShowAddForm() {
-    this.setState({ isShowAddForm: !this.state.isShowAddForm });
-  }
-
-  onChangeInputName(newEventName) {
-    this.setState({ newEventName });
-  }
-
-  onChangeInputDate(newEventDate) {
-    this.setState({ newEventDate });
-  }
-
-  onChangeCity(newEventCity) {
-    this.setState({ newEventCity });
-  }
-
-  onAdd() {
-    const events = this.copyEvent();
-    events.push({
-      name: this.state.newEventName,
-      date: this.state.newEventDate.split('-').reverse().join('.'),
-      city: this.state.newEventCity,
-      isChoose: false,
-    });
-
-    this.setState({
-      events,
-      newEventName: '',
-      newEventDate: '',
-      newEventCity: '',
-      isShowAddForm: false,
-    })
-  }
-
-
   render() {
     return (
       <div className='App'>
@@ -121,51 +18,51 @@ class App extends Component {
             <div className='buttons'>
               <div
                 className='button-plus'
-                onClick={() => this.onShowAddForm()}>+</div>
+                onClick={() => this.props.onShowAddForm()}>+</div>
               <div
-                className={`button-minus ${this.state.events.every(eventItem => !eventItem.isChoose) || this.state.events.length === 1 ? 'disabled' : ''}`}
-                onClick={() => this.onShowDeleteForm()}>–</div>
+                className={`button-minus ${this.props.events.every(eventItem => !eventItem.isChoose) || this.props.events.length === 1 ? 'disabled' : ''}`}
+                onClick={() => this.props.onShowDeleteForm()}>–</div>
             </div>
             <Input
               type='text'
               placeholder='Поиск'
-              value={this.state.searchValue}
-              onChange={(event) => this.onChangeInputSearch(event.target.value)}
+              value={this.props.searchValue}
+              onChange={(event) => this.props.onChangeInputSearch(event.target.value)}
             />
           </div>
           {
-            this.filterEvents(this.state.events).map((eventItem, i) => {
+            filterEvents(this.props.events, this.props.searchValue).map((eventItem, i) => {
               return <EventItem
                 key={i}
                 index={i}
                 eventItem={eventItem}
-                onChoose={(event) => this.onChoose(event.target.checked, i)}
+                onChoose={(event) => this.props.onChoose(event.target.checked, i)}
               />
             })
           }
           {
-            this.state.isShowDeleteForm &&
+            this.props.isShowDeleteForm &&
             <DeleteForm
-              onCancel={() => this.onShowDeleteForm()}
-              onDelete={() => this.onDelete()} />
+              onCancel={() => this.props.onShowDeleteForm()}
+              onDelete={() => this.props.onDelete()} />
           }
           {
-            this.state.isShowAddForm &&
+            this.props.isShowAddForm &&
             <AddForm
               typeInputName='text'
               typeInputDate='date'
               placeholderName='Название'
               placeholderDate='Дата'
-              onChangeInputName={(event) => this.onChangeInputName(event.target.value)}
-              onChangeInputDate={(event) => this.onChangeInputDate(event.target.value)}
-              nameValue={this.state.newEventName}
-              dateValue={this.state.newEventDate}
-              cities={this.state.cities}
-              selectValue={this.state.newEventCity}
-              onChangeSelect={(event) => this.onChangeCity(event.target.value)}
-              onCancel={() => this.onShowAddForm()}
-              onAdd={() => this.onAdd()}
-              isActiveButtonAdd={this.state.newEventName && this.state.newEventDate && this.state.newEventCity} />
+              onChangeInputName={(event) => this.props.onChangeInputName(event.target.value)}
+              onChangeInputDate={(event) => this.props.onChangeInputDate(event.target.value)}
+              nameValue={this.props.newEventName}
+              dateValue={this.props.newEventDate}
+              cities={CITIES}
+              selectValue={this.props.newEventCity}
+              onChangeSelect={(event) => this.props.onChangeCity(event.target.value)}
+              onCancel={() => this.props.onShowAddForm()}
+              onAdd={() => this.props.onAdd()}
+              isActiveButtonAdd={this.props.newEventName && this.props.newEventDate && this.props.newEventCity} />
           }
         </div>
       </div>
@@ -173,4 +70,31 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    events: state.events,
+    searchValue: state.searchValue,
+    isShowDeleteForm: state.isShowDeleteForm,
+    isShowAddForm: state.isShowAddForm,
+    newEventName: state.newEventName,
+    newEventDate: state.newEventDate,
+    newEventCity: state.newEventCity,
+    cities: state.cities,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    onChoose: (choose, index) => dispatch({ type: 'CHOOSE', choose, index }),
+    onChangeInputSearch: (searchValue) => dispatch({ type: 'CHANGE_SEARCH', searchValue }),
+    onDelete: () => dispatch({ type: 'DELETE' }),
+    onShowDeleteForm: () => dispatch({ type: 'SHOW_DELETE' }),
+    onShowAddForm: () => dispatch({ type: 'SHOW_ADD' }),
+    onChangeInputName: (newEventName) => dispatch({ type: 'CHANGE_NAME', newEventName }),
+    onChangeInputDate: (newEventDate) => dispatch({ type: 'CHANGE_DATE', newEventDate }),
+    onChangeCity: (newEventCity) => dispatch({ type: 'CHANGE_CITY', newEventCity }),
+    onAdd: () => dispatch({ type: 'ADD' }),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
