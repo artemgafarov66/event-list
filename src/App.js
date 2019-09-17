@@ -6,9 +6,13 @@ import DeleteForm from './components/DeleteForm/DeleteForm';
 import AddForm from './components/AddForm/AddForm';
 import { filterEvents } from './utils';
 import { CITIES } from './consts';
-
 import './App.scss';
+
 class App extends Component {
+  isDisabledAdd = () => (
+    filterEvents(this.props.events, this.props.searchValue).every(eventItem => !eventItem.isChoose)
+    || filterEvents(this.props.events, this.props.searchValue).length === 1 ? 'disabled' : '');
+
   render() {
     return (
       <div className='App'>
@@ -20,7 +24,7 @@ class App extends Component {
                 className='button-plus'
                 onClick={() => this.props.onShowAddForm()}>+</div>
               <div
-                className={`button-minus ${this.props.events.every(eventItem => !eventItem.isChoose) || this.props.events.length === 1 ? 'disabled' : ''}`}
+                className={`button-minus ${this.isDisabledAdd()}`}
                 onClick={() => this.props.onShowDeleteForm()}>–</div>
             </div>
             <Input
@@ -31,14 +35,12 @@ class App extends Component {
             />
           </div>
           {
-            filterEvents(this.props.events, this.props.searchValue).map((eventItem, i) => {
-              return <EventItem
+            filterEvents(this.props.events, this.props.searchValue).map((eventItem, i) => <EventItem
                 key={i}
                 index={i}
                 eventItem={eventItem}
                 onChoose={(event) => this.props.onChoose(event.target.checked, i)}
-              />
-            })
+              />)
           }
           {
             this.props.isShowDeleteForm &&
@@ -66,7 +68,7 @@ class App extends Component {
           }
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -80,7 +82,7 @@ function mapStateToProps(state) {
     newEventDate: state.newEventDate,
     newEventCity: state.newEventCity,
     cities: state.cities,
-  }
+  };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -94,7 +96,7 @@ function mapDispatchToProps(dispatch) {
     onChangeInputDate: (newEventDate) => dispatch({ type: 'CHANGE_DATE', newEventDate }),
     onChangeCity: (newEventCity) => dispatch({ type: 'CHANGE_CITY', newEventCity }),
     onAdd: () => dispatch({ type: 'ADD' }),
-  }
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

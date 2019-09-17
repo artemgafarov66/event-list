@@ -10,20 +10,20 @@ const initialState = {
     },
     {
       name: 'Мероприятие 1',
-      date: '11.11.11',
-      city: 'Дзержинск',
+      date: '20.08.2017',
+      city: 'Нижний Новгород',
       isChoose: false,
     },
     {
       name: 'Мероприятие 2',
-      date: '12.12.12',
+      date: '13.09.2017',
       city: 'Саров',
       isChoose: false,
     },
     {
       name: 'Мероприятие 3',
-      date: '13.13.13',
-      city: 'Нижний Новгород',
+      date: '03.10.2017',
+      city: 'Арзамас',
       isChoose: false,
     },
   ],
@@ -95,5 +95,4 @@ export default function rootReducer(state = initialState, action) {
     default:
       return state;
   }
-
 }

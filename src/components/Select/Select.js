@@ -1,7 +1,8 @@
 import React from 'react';
 import './Select.scss';
 
-export default (props) => <div className='Select'>
+export default (props) => <div
+  className='Select'>
   <select
     style={{ color: props.selectValue ? '#000' : '#8a7f7f' }}
     defaultValue='Город'
